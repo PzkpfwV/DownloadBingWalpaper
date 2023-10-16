@@ -83,7 +83,7 @@ foreach ($item in $ImagesInfo) {
     # $DownloadURL = "$($Website)$($item.url)";
     if ([System.IO.File]::Exists((Join-Path $Directory $filename))) {
         Write-Host "Skipped" -ForegroundColor:Green;
-        continue; # 顺序为倒序
+        continue;
     }
     try {
         Invoke-WebRequest -Uri $info.url -OutFile (Join-Path $Directory $filename);
