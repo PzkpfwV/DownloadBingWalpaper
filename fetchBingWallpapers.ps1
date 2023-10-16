@@ -56,8 +56,14 @@ if (-Not $Res.BaseResponse.IsSuccessStatusCode) {
 }
 $ImagesInfo = ($Res.Content | ConvertFrom-Json).Images;
 Write-Host "Downloading Bing Wallpapers ..." -ForegroundColor:Blue;
-Write-Host "Date     `t FileName                     `tStatus";
-$LenFileName = "FileName                     `tStatus".Length - " `tStatus".Length; 
+$LenDate = 8;
+$LenFileName = 28; 
+$Cols = @("Date",
+ ((" ") * ($LenDate + 3 - "Date".Length)) , 
+    "FileName" , 
+ (" " * ($LenFileName - "FileName".Length + 2)),
+    "Status");
+Write-Host (-Join $Cols);
 foreach ($item in $ImagesInfo) {
     $info = $item;
     $filename = "$($item.fullstartdate).jpg";
@@ -78,12 +84,12 @@ foreach ($item in $ImagesInfo) {
     $OutputName = FileNameFormat `
         -filename ($info.OgrinalName -replace "_ROW[\S]*.jpg", ".jpg") `
         -TargetLen $LenFileName;
-    Write-Host ($item.startdate)"`t"$OutputName"`t" `
+    Write-Host ($item.startdate)" "$OutputName"  " `
         -NoNewline;
     # $DownloadURL = "$($Website)$($item.url)";
     if ([System.IO.File]::Exists((Join-Path $Directory $filename))) {
         Write-Host "Skipped" -ForegroundColor:Green;
-        continue;
+        continue; # 顺序为倒序
     }
     try {
         Invoke-WebRequest -Uri $info.url -OutFile (Join-Path $Directory $filename);
@@ -97,4 +103,3 @@ foreach ($item in $ImagesInfo) {
     }
 }
 Write-Host "Operations completed successfullly." -ForegroundColor:Blue;
-# -Headers $Headers;
